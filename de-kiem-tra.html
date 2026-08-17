@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đề kiểm tra online — Xác suất có điều kiện</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F7F5;
+    --paper-line:#CBD8D3;
+    --ink:#1E2A2A;
+    --ink-soft:#4B5D5A;
+    --teal:#0F6B5C;
+    --teal-deep:#0A4E43;
+    --amber:#E0913F;
+    --good:#2F9E63;
+    --bad:#D14B4B;
+    --card:#FFFFFF;
+    --radius:14px;
+    --shadow:0 4px 18px rgba(15,107,92,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px) 0 0/100% 42px,
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px) 0 0/42px 100%,
+      var(--paper);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    line-height:1.55;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:28px 18px 80px;}
+  h1,h2,h3{font-family:'Fraunces', serif;font-weight:600;margin:0;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--teal);font-weight:600;
+  }
+  .num{font-family:'IBM Plex Mono',monospace;}
+  a{color:var(--teal-deep);}
+  button{font-family:inherit;cursor:pointer;}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+
+  header.top{
+    background:var(--teal);
+    color:#EFF6F3;
+    border-radius:var(--radius);
+    padding:22px 26px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  header.top::after{
+    content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/100% 20px,
+      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0/20px 100%;
+    pointer-events:none;
+  }
+  header.top h1{font-size:26px;color:#fff;position:relative;}
+  header.top p{margin:6px 0 0;color:#D7EDE6;font-size:14px;position:relative;}
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:24px 26px;
+    margin-bottom:20px;
+    border:1px solid #E4ECE9;
+  }
+
+  .brief-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14.5px;}
+  .brief-table td{padding:9px 4px;border-bottom:1px dashed var(--paper-line);}
+  .brief-table td:first-child{color:var(--ink-soft);width:40%;}
+  .brief-table td:last-child{font-weight:600;color:var(--teal-deep);}
+  .name-field{margin-top:16px;}
+  .name-field label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:6px;}
+  .name-field label .req{color:var(--bad);font-weight:700;}
+  .name-field input{
+    width:100%;padding:11px 13px;border:1.5px solid var(--paper-line);
+    border-radius:8px;font-size:15px;font-family:inherit;background:#FBFDFC;
+  }
+  .name-field input:focus{border-color:var(--teal);}
+  .name-field input.error{border-color:var(--bad);background:#FDF1F1;}
+  .field-error{color:var(--bad);font-size:12.5px;margin-top:6px;display:none;}
+  .field-error.show{display:block;}
+  .btn-primary{
+    background:var(--teal);color:#fff;border:none;border-radius:9px;
+    padding:13px 22px;font-size:15.5px;font-weight:600;margin-top:18px;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:background .15s, transform .1s;
+  }
+  .btn-primary:hover{background:var(--teal-deep);}
+  .btn-primary:active{transform:scale(.98);}
+  .btn-ghost{
+    background:transparent;border:1.5px solid var(--teal);color:var(--teal-deep);
+    border-radius:9px;padding:11px 18px;font-weight:600;font-size:14.5px;
+  }
+  .btn-ghost:hover{background:#EAF4F1;}
+  .btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+
+  .diff-badge{
+    display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.03em;
+  }
+  .diff-1{background:#DDEFE7;color:var(--teal-deep);}
+  .diff-2{background:#FBEAD3;color:#8A5A16;}
+  .diff-3{background:#FADBD3;color:#A5401F;}
+
+  .quiz-header{
+    position:sticky;top:0;z-index:20;
+    background:var(--paper);
+    padding-top:10px;padding-bottom:12px;
+    margin-bottom:6px;
+  }
+  .quiz-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border-radius:12px;padding:12px 18px;
+    box-shadow:var(--shadow);border:1px solid #E4ECE9;flex-wrap:wrap;gap:10px;
+  }
+  .timer{
+    font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;
+    color:var(--teal-deep);display:flex;align-items:center;gap:8px;
+  }
+  .timer.low{color:var(--bad);}
+  .nav-dots{display:flex;gap:7px;}
+  .dot{
+    width:32px;height:32px;border-radius:8px;border:1.5px solid var(--paper-line);
+    background:#fff;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+    color:var(--ink-soft);display:flex;align-items:center;justify-content:center;
+  }
+  .dot.answered{background:#DDEFE7;border-color:var(--teal);color:var(--teal-deep);}
+  .dot.partial{background:#FBEAD3;border-color:var(--amber);color:#8A5A16;}
+  .dot.current{outline:2.5px solid var(--teal-deep);outline-offset:1.5px;}
+
+  .q-tag{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;
+    background:#EAF4F1;color:var(--teal-deep);padding:4px 10px;border-radius:6px;
+    margin-bottom:10px;font-weight:600;letter-spacing:.03em;margin-right:6px;
+  }
+  .q-content{font-size:16px;margin-bottom:16px;}
+  .statement{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+    padding:14px 4px;border-top:1px dashed var(--paper-line);
+  }
+  .statement:first-of-type{border-top:none;}
+  .st-text{flex:1;font-size:15px;}
+  .st-label{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--teal);margin-right:6px;}
+  .toggle{display:flex;gap:6px;flex-shrink:0;}
+  .toggle button{
+    border:1.5px solid var(--paper-line);background:#fff;border-radius:7px;
+    padding:8px 14px;font-size:13.5px;font-weight:600;color:var(--ink-soft);
+    min-width:64px;
+  }
+  .toggle button.sel-true{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .toggle button.sel-false{background:var(--bad);border-color:var(--bad);color:#fff;}
+
+  .quiz-footer{display:flex;justify-content:space-between;margin-top:6px;gap:10px;flex-wrap:wrap;}
+
+  .score-hero{
+    text-align:center;background:var(--teal);color:#fff;border-radius:var(--radius);
+    padding:30px 20px;margin-bottom:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .score-hero::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px) 0 0/100% 20px,
+      linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px) 0 0/20px 100%;
+  }
+  .score-hero .big{font-family:'IBM Plex Mono',monospace;font-size:56px;font-weight:600;position:relative;}
+  .score-hero .cap{position:relative;color:#D7EDE6;font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
+  .score-hero .stuname{position:relative;font-family:'Fraunces',serif;font-size:19px;margin-top:6px;color:#fff;}
+  .save-status{
+    position:relative;margin-top:14px;font-size:12.5px;color:#D7EDE6;
+    background:rgba(255,255,255,.12);display:inline-block;padding:6px 14px;border-radius:20px;
+  }
+  .review-q{border-radius:var(--radius);}
+  .review-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .qscore{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--teal-deep);font-size:14px;background:#EAF4F1;padding:4px 10px;border-radius:6px;}
+  .review-st{
+    display:flex;align-items:flex-start;gap:10px;padding:11px 4px;border-top:1px dashed var(--paper-line);
+  }
+  .review-st:first-of-type{border-top:none;}
+  .mark{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;margin-top:1px;}
+  .mark.ok{background:var(--good);}
+  .mark.no{background:var(--bad);}
+  .review-body .st-text{font-size:14.5px;}
+  .review-body .meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .review-body .meta b{color:var(--ink);}
+  .review-body .expl{font-size:13px;color:var(--teal-deep);margin-top:4px;background:#EEF6F3;border-radius:6px;padding:6px 9px;}
+  .review-body .expl b{color:var(--teal-deep);}
+
+  .solution-toggle{
+    margin-top:14px;background:transparent;border:1.5px dashed var(--teal);color:var(--teal-deep);
+    border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;width:100%;
+  }
+  .solution-toggle:hover{background:#EAF4F1;}
+  .solution-box{margin-top:12px;padding-top:14px;border-top:1px dashed var(--paper-line);}
+  .solution-box.hidden{display:none;}
+  .solution-note{
+    font-size:13px;color:var(--ink-soft);background:#FBEAD3;border-left:3px solid var(--amber);
+    padding:8px 12px;border-radius:6px;margin-bottom:12px;
+  }
+  .solution-tablewrap{overflow-x:auto;margin-bottom:10px;}
+  table.two-way{border-collapse:collapse;width:100%;font-size:13px;min-width:420px;}
+  table.two-way caption{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin-bottom:6px;letter-spacing:.03em;text-transform:uppercase;}
+  table.two-way th,table.two-way td{border:1px solid var(--paper-line);padding:7px 10px;text-align:center;}
+  table.two-way thead th{background:var(--teal);color:#fff;font-weight:600;}
+  table.two-way td:first-child,table.two-way th:first-child{text-align:left;font-weight:600;background:#F1F6F4;color:var(--teal-deep);}
+  table.two-way tr:last-child td{font-weight:700;background:#EAF4F1;}
+  .solution-expl-list{margin-top:12px;}
+  .sol-line{font-size:13.5px;padding:7px 4px;border-top:1px dashed var(--paper-line);}
+  .sol-line:first-child{border-top:none;}
+  .sol-line b.tag-ok{color:var(--good);}
+  .sol-line b.tag-no{color:var(--bad);}
+
+  .rank-card{text-align:center;}
+  .rank-card a.btn-primary{text-decoration:none;}
+
+  footer.hint{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-top:30px;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow" style="color:#BFE3D8;">ĐỀ KIỂM TRA · 5 CÂU · TĂNG DẦN ĐỘ KHÓ</div>
+    <h1>Kiểm tra Xác suất có điều kiện</h1>
+    <p>Kỹ thuật bảng hai chiều — Toán 12 · Định dạng câu hỏi Đúng/Sai như đề tốt nghiệp THPT</p>
+  </header>
+
+  <!-- ===================== SCREEN 1: LANDING ===================== -->
+  <section id="screen-landing">
+    <div class="card">
+      <span class="eyebrow">Thông tin đề kiểm tra</span>
+      <h2 style="margin-top:6px;">Đề ngẫu nhiên, sắp xếp từ dễ đến khó</h2>
+      <table class="brief-table">
+        <tr><td>Số câu hỏi</td><td>05 câu (mỗi câu 4 mệnh đề Đúng/Sai)</td></tr>
+        <tr><td>Cơ cấu đề</td><td>1 câu Dạng 1 · 1 câu Dạng 2 · 1 câu Dạng 3 hoặc Dạng 6 · 1 câu Dạng 4 · 1 câu Dạng 5</td></tr>
+        <tr><td>Thứ tự câu hỏi</td><td>Xếp từ dễ → khó theo đúng cơ cấu trên</td></tr>
+        <tr><td>Thời gian làm bài</td><td>20 phút</td></tr>
+        <tr><td>Cách tính điểm</td><td>Theo thang Đúng/Sai kỳ thi TN THPT (0,1 – 0,25 – 0,5 – 1,0 điểm/câu, quy đổi thang 10)</td></tr>
+        <tr><td>Kết quả</td><td>Tự động lưu vào bảng xếp hạng chung sau khi nộp bài</td></tr>
+      </table>
+      <div class="name-field">
+        <label for="student-name">Họ tên thí sinh <span class="req">(bắt buộc)</span></label>
+        <input id="student-name" type="text" placeholder="Nhập họ tên của bạn...">
+        <div class="field-error" id="name-error">Vui lòng nhập họ tên trước khi bắt đầu làm bài.</div>
+      </div>
+      <button class="btn-primary" id="start-btn">▶ Bắt đầu làm bài (đề ngẫu nhiên)</button>
+    </div>
+  </section>
+
+  <!-- ===================== SCREEN 2: QUIZ ===================== -->
+  <section id="screen-quiz" class="hidden">
+    <div class="quiz-header">
+      <div class="quiz-bar">
+        <div class="timer" id="timer">⏱ 20:00</div>
+        <div class="nav-dots" id="nav-dots"></div>
+      </div>
+    </div>
+
+    <div class="card" id="question-card"></div>
+
+    <div class="quiz-footer">
+      <div>
+        <button class="btn-ghost" id="prev-btn">← Câu trước</button>
+        <button class="btn-ghost" id="next-btn">Câu sau →</button>
+      </div>
+      <button class="btn-primary" id="submit-btn">Nộp bài</button>
+    </div>
+  </section>
+
+  <!-- ===================== SCREEN 3: RESULTS ===================== -->
+  <section id="screen-results" class="hidden">
+    <div class="score-hero">
+      <div class="cap">Tổng điểm</div>
+      <div class="big"><span id="score-total">0.00</span><span style="font-size:26px;">/10</span></div>
+      <div class="stuname" id="score-name"></div>
+      <div class="cap" id="score-sub" style="margin-top:6px;"></div>
+      <div class="save-status" id="save-status">Đang lưu kết quả vào bảng xếp hạng...</div>
+    </div>
+    <div class="card rank-card">
+      <h3 style="margin-bottom:8px;">Xem bảng xếp hạng của lớp</h3>
+      <p style="color:var(--ink-soft);font-size:14px;margin:0 0 6px;">Điểm của bạn vừa được ghi nhận. Bấm nút dưới để xem toàn bộ bảng xếp hạng.</p>
+      <a class="btn-primary" id="rank-link" href="#" target="_blank" rel="noopener">🏆 Xem bảng xếp hạng</a>
+    </div>
+    <div id="review-list"></div>
+    <div style="text-align:center;margin-top:10px;">
+      <button class="btn-primary" id="retry-btn">↻ Làm đề mới</button>
+    </div>
+  </section>
+
+  <footer class="hint">Xác suất có điều kiện · Kỹ thuật bảng hai chiều · Toán 12</footer>
+</div>
+
+<script>
+/* ================= CẤU HÌNH GHI KẾT QUẢ VÀO GOOGLE SHEET =================
+   Xem hướng dẫn thiết lập Google Form + Google Sheet đi kèm.
+   Dán URL và entry ID tương ứng vào đây sau khi tạo Form. */
+const GOOGLE_FORM_ACTION_URL = "PASTE_GOOGLE_FORM_ACTION_URL_HERE";
+const ENTRY_NAME  = "PASTE_ENTRY_ID_HO_TEN_HERE";
+const ENTRY_SCORE = "PASTE_ENTRY_ID_DIEM_SO_HERE";
+const ENTRY_DETAIL = "PASTE_ENTRY_ID_CHI_TIET_HERE";
+const RANKING_SHEET_URL = "PASTE_LINK_GOOGLE_SHEET_DA_PUBLISH_HERE";
+
+/* ================= NGÂN HÀNG CÂU HỎI ================= */
+const QUESTION_BANK = [
+{id:1,dang:1,content:"Một trường THPT khảo sát 250 học sinh khối 12, gồm 150 học sinh nam và 100 học sinh nữ. Kết quả cho thấy có 45 học sinh nam và 30 học sinh nữ đạt loại Giỏi trong học kỳ I. Chọn ngẫu nhiên một học sinh trong số 250 học sinh trên.",
+table:{rowHead:"Giới tính / Học lực",colHeads:["Giỏi","Không Giỏi","Tổng cộng"],rows:[["Nam","45","105","150"],["Nữ","30","70","100"],["Tổng cộng","75","175","250"]]},
+statements:[
+{text:"Số học sinh nam đạt loại Giỏi là 45 học sinh.",correct:true,expl:"Đọc trực tiếp ô giao (Nam, Giỏi) trong bảng hai chiều = 45."},
+{text:"Xác suất chọn được học sinh đạt loại Giỏi bằng 0,3.",correct:true,expl:"P(Giỏi) = 75/250 = 0,3."},
+{text:"Xác suất chọn được học sinh nữ và không đạt loại Giỏi bằng 0,3.",correct:false,expl:"Giá trị đúng là 70/250 = 0,28 ≠ 0,3."},
+{text:"Biết học sinh được chọn là nam, xác suất học sinh đó đạt loại Giỏi bằng 0,3.",correct:true,expl:"Che dòng Nữ: P(Giỏi | Nam) = 45/150 = 0,3."}]},
+{id:2,dang:1,content:"Một công ty có 400 nhân viên, gồm 180 nhân viên thuộc bộ phận A và 220 nhân viên thuộc bộ phận B. Qua đánh giá cuối năm, có 54 nhân viên bộ phận A và 88 nhân viên bộ phận B được xếp loại Hoàn thành xuất sắc nhiệm vụ. Chọn ngẫu nhiên một nhân viên trong công ty.",
+table:{rowHead:"Bộ phận / Xếp loại",colHeads:["Xuất sắc","Không xuất sắc","Tổng cộng"],rows:[["Bộ phận A","54","126","180"],["Bộ phận B","88","132","220"],["Tổng cộng","142","258","400"]]},
+statements:[
+{text:"Số nhân viên bộ phận B xếp loại xuất sắc là 88 người.",correct:true,expl:"Đọc trực tiếp ô giao (B, Xuất sắc) = 88."},
+{text:"Xác suất chọn được nhân viên xuất sắc bằng 0,355.",correct:true,expl:"P(xuất sắc) = 142/400 = 0,355."},
+{text:"Xác suất chọn được nhân viên bộ phận A và không xuất sắc bằng 0,3.",correct:false,expl:"Giá trị đúng là 126/400 = 0,315 ≠ 0,3."},
+{text:"Biết nhân viên được chọn thuộc bộ phận B, xác suất người đó xuất sắc bằng 0,4.",correct:true,expl:"Che dòng A: P(xuất sắc | B) = 88/220 = 0,4."}]},
+{id:3,dang:1,content:"Tại một bệnh viện, thống kê trên 400 ca phẫu thuật trong quý gồm 240 ca do êkíp X thực hiện và 160 ca do êkíp Y thực hiện. Trong đó, êkíp X có 72 ca hồi phục nhanh, êkíp Y có 56 ca hồi phục nhanh. Chọn ngẫu nhiên một ca phẫu thuật trong số trên.",
+table:{rowHead:"Êkíp / Hồi phục",colHeads:["Hồi phục nhanh","Không hồi phục nhanh","Tổng cộng"],rows:[["Êkíp X","72","168","240"],["Êkíp Y","56","104","160"],["Tổng cộng","128","272","400"]]},
+statements:[
+{text:"Số ca do êkíp X thực hiện nhưng không hồi phục nhanh là 168 ca.",correct:true,expl:"240 − 72 = 168."},
+{text:"Xác suất chọn được ca hồi phục nhanh bằng 0,32.",correct:true,expl:"P(hồi phục nhanh) = 128/400 = 0,32."},
+{text:"Xác suất chọn được ca của êkíp Y và hồi phục nhanh bằng 0,15.",correct:false,expl:"Giá trị đúng là 56/400 = 0,14 ≠ 0,15."},
+{text:"Biết ca phẫu thuật do êkíp X thực hiện, xác suất ca đó hồi phục nhanh bằng 0,3.",correct:true,expl:"Che dòng Y: P(hồi phục nhanh | X) = 72/240 = 0,3."}]},
+{id:4,dang:1,content:"Một giải chạy marathon phong trào có 500 người tham gia, gồm 300 người thuộc nhóm tuổi dưới 35 và 200 người thuộc nhóm tuổi từ 35 trở lên. Trong đó, 120 người nhóm dưới 35 tuổi và 50 người nhóm từ 35 tuổi trở lên về đích dưới 4 giờ. Chọn ngẫu nhiên một người tham gia.",
+table:{rowHead:"Nhóm tuổi / Thời gian",colHeads:["Dưới 4 giờ","Từ 4 giờ trở lên","Tổng cộng"],rows:[["Dưới 35 tuổi","120","180","300"],["Từ 35 tuổi trở lên","50","150","200"],["Tổng cộng","170","330","500"]]},
+statements:[
+{text:"Số người thuộc nhóm từ 35 tuổi trở lên về đích dưới 4 giờ là 50 người.",correct:true,expl:"Đọc trực tiếp ô giao = 50."},
+{text:"Xác suất chọn được người về đích từ 4 giờ trở lên bằng 0,34.",correct:false,expl:"Giá trị đúng là 330/500 = 0,66 ≠ 0,34."},
+{text:"Xác suất chọn được người dưới 35 tuổi và về đích dưới 4 giờ bằng 0,24.",correct:true,expl:"P = 120/500 = 0,24."},
+{text:"Biết người được chọn từ 35 tuổi trở lên, xác suất người đó về đích dưới 4 giờ bằng 0,25.",correct:true,expl:"Che dòng còn lại: P = 50/200 = 0,25."}]},
+{id:5,dang:1,content:"Một trung tâm ngoại ngữ có 400 học viên, gồm 160 học viên lớp Cơ bản và 240 học viên lớp Nâng cao. Kết thúc khoá học, 48 học viên lớp Cơ bản và 88 học viên lớp Nâng cao đạt chứng chỉ đầu ra. Chọn ngẫu nhiên một học viên của trung tâm.",
+table:{rowHead:"Lớp / Kết quả",colHeads:["Đạt chứng chỉ","Không đạt chứng chỉ","Tổng cộng"],rows:[["Cơ bản","48","112","160"],["Nâng cao","88","152","240"],["Tổng cộng","136","264","400"]]},
+statements:[
+{text:"Số học viên lớp Cơ bản không đạt chứng chỉ là 112 học viên.",correct:true,expl:"160 − 48 = 112."},
+{text:"Xác suất chọn được học viên đạt chứng chỉ bằng 0,34.",correct:true,expl:"P(đạt) = 136/400 = 0,34."},
+{text:"Xác suất chọn được học viên lớp Nâng cao và không đạt chứng chỉ bằng 0,38.",correct:true,expl:"P = 152/400 = 0,38."},
+{text:"Biết học viên được chọn thuộc lớp Cơ bản, xác suất học viên đó đạt chứng chỉ bằng 0,35.",correct:false,expl:"Giá trị đúng là 48/160 = 0,3 ≠ 0,35."}]},
+
+{id:6,dang:2,content:"Thống kê tại một khu dân cư 2.000 người cho thấy 25% có thói quen hút thuốc lá. Trong nhóm hút thuốc, tỉ lệ mắc bệnh hô hấp mạn tính là 12%; trong nhóm không hút thuốc, tỉ lệ này là 3%. Chọn ngẫu nhiên một người trong khu dân cư (mẫu tính toán: 2.000 người).",
+table:{rowHead:"Nhóm / Bệnh hô hấp",colHeads:["Mắc bệnh","Không mắc bệnh","Tổng cộng"],rows:[["Hút thuốc","60","440","500"],["Không hút thuốc","45","1.455","1.500"],["Tổng cộng","105","1.895","2.000"]]},
+statements:[
+{text:"Số người hút thuốc và mắc bệnh hô hấp mạn tính là 60 người.",correct:true,expl:"500 × 12% = 60."},
+{text:"Xác suất chọn được người mắc bệnh hô hấp mạn tính bằng 0,0525.",correct:true,expl:"P = 105/2.000 = 0,0525."},
+{text:"Xác suất chọn được người không hút thuốc và không mắc bệnh bằng 0,7275.",correct:true,expl:"P = 1.455/2.000 = 0,7275."},
+{text:"Biết người được chọn hút thuốc, xác suất người đó mắc bệnh hô hấp bằng 0,12.",correct:true,expl:"P = 60/500 = 0,12, đúng bằng tỉ lệ đề cho."}]},
+{id:7,dang:2,content:"Một sở giáo dục quản lý 1.500 giáo viên, trong đó 40% công tác tại vùng khó khăn. Tỉ lệ giáo viên đạt chuẩn bồi dưỡng chuyên môn ở vùng khó khăn là 55%, ở vùng còn lại là 75%. Chọn ngẫu nhiên một giáo viên (mẫu tính toán: 1.500 người).",
+table:{rowHead:"Vùng công tác / Chuẩn",colHeads:["Đạt chuẩn","Chưa đạt chuẩn","Tổng cộng"],rows:[["Vùng khó khăn","330","270","600"],["Vùng còn lại","675","225","900"],["Tổng cộng","1.005","495","1.500"]]},
+statements:[
+{text:"Số giáo viên vùng khó khăn đạt chuẩn bồi dưỡng là 330 người.",correct:true,expl:"600 × 55% = 330."},
+{text:"Xác suất chọn được giáo viên đạt chuẩn bồi dưỡng bằng 0,65.",correct:false,expl:"Giá trị đúng là 1.005/1.500 = 0,67 ≠ 0,65."},
+{text:"Xác suất chọn được giáo viên vùng còn lại và chưa đạt chuẩn bằng 0,15.",correct:true,expl:"P = 225/1.500 = 0,15."},
+{text:"Biết giáo viên được chọn công tác ở vùng khó khăn, xác suất người đó đạt chuẩn bằng 0,55.",correct:true,expl:"P = 330/600 = 0,55, đúng bằng tỉ lệ đề cho."}]},
+{id:8,dang:2,content:"Một nhà máy có hai dây chuyền sản xuất. Dây chuyền X sản xuất 40% tổng sản lượng, dây chuyền Y sản xuất 60% còn lại. Tỉ lệ sản phẩm lỗi của dây chuyền X là 2%, của dây chuyền Y là 5%. Kiểm tra ngẫu nhiên một sản phẩm trong lô 1.000 sản phẩm.",
+table:{rowHead:"Dây chuyền / Chất lượng",colHeads:["Lỗi","Không lỗi","Tổng cộng"],rows:[["Dây chuyền X","8","392","400"],["Dây chuyền Y","30","570","600"],["Tổng cộng","38","962","1.000"]]},
+statements:[
+{text:"Tổng số sản phẩm lỗi trong lô hàng là 38 sản phẩm.",correct:true,expl:"8 + 30 = 38."},
+{text:"Xác suất chọn được sản phẩm không lỗi bằng 0,962.",correct:true,expl:"P = 962/1.000 = 0,962."},
+{text:"Xác suất chọn được sản phẩm của dây chuyền X và bị lỗi bằng 0,008.",correct:true,expl:"P = 8/1.000 = 0,008."},
+{text:"Biết sản phẩm được chọn thuộc dây chuyền Y, xác suất sản phẩm đó lỗi bằng 0,04.",correct:false,expl:"Giá trị đúng là 30/600 = 0,05 ≠ 0,04."}]},
+{id:9,dang:2,content:"Một sàn thương mại điện tử ghi nhận 20% đơn hàng đặt online, 80% đặt tại quầy giao dịch trực tiếp. Tỉ lệ đơn giao trễ của đơn online là 8%, của đơn tại quầy là 3%. Chọn ngẫu nhiên một đơn hàng trong 1.000 đơn.",
+table:{rowHead:"Kênh đặt hàng / Giao hàng",colHeads:["Giao trễ","Đúng hạn","Tổng cộng"],rows:[["Đặt online","16","184","200"],["Đặt tại quầy","24","776","800"],["Tổng cộng","40","960","1.000"]]},
+statements:[
+{text:"Xác suất chọn được đơn hàng giao trễ bằng 0,05.",correct:false,expl:"Giá trị đúng là 40/1.000 = 0,04 ≠ 0,05."},
+{text:"Xác suất chọn được đơn đặt online và giao trễ bằng 0,016.",correct:true,expl:"P = 16/1.000 = 0,016."},
+{text:"Biết đơn hàng đặt tại quầy, xác suất đơn đó giao trễ bằng 0,03.",correct:true,expl:"P = 24/800 = 0,03, đúng bằng tỉ lệ đề cho."},
+{text:"Xác suất chọn được đơn hàng đúng hạn bằng 0,96.",correct:true,expl:"P = 960/1.000 = 0,96."}]},
+{id:10,dang:2,content:"Một hợp tác xã có 1.500 hộ nông dân, trong đó 45% trồng lúa theo phương pháp hữu cơ. Tỉ lệ hộ được cấp chứng nhận VietGAP ở nhóm trồng hữu cơ là 80%, ở nhóm còn lại là 40%. Chọn ngẫu nhiên một hộ nông dân (mẫu tính toán: 1.500 hộ).",
+table:{rowHead:"Phương pháp trồng / VietGAP",colHeads:["Được chứng nhận","Chưa chứng nhận","Tổng cộng"],rows:[["Trồng hữu cơ","540","135","675"],["Trồng thông thường","330","495","825"],["Tổng cộng","870","630","1.500"]]},
+statements:[
+{text:"Số hộ trồng hữu cơ được cấp chứng nhận VietGAP là 540 hộ.",correct:true,expl:"675 × 80% = 540."},
+{text:"Xác suất chọn được hộ được chứng nhận VietGAP bằng 0,58.",correct:true,expl:"P = 870/1.500 = 0,58."},
+{text:"Xác suất chọn được hộ trồng thông thường và chưa chứng nhận bằng 0,3.",correct:false,expl:"Giá trị đúng là 495/1.500 = 0,33 ≠ 0,3."},
+{text:"Biết hộ được chọn trồng hữu cơ, xác suất hộ đó được chứng nhận VietGAP bằng 0,8.",correct:true,expl:"P = 540/675 = 0,8, đúng bằng tỉ lệ đề cho."}]},
+
+{id:11,dang:3,content:"Một công ty tuyển dụng có 40% ứng viên tốt nghiệp loại Giỏi. Trong nhóm tốt nghiệp loại Giỏi, 75% vượt qua vòng phỏng vấn; trong nhóm còn lại, chỉ 30% vượt qua vòng phỏng vấn. Chọn ngẫu nhiên một ứng viên trong 1.000 ứng viên.",
+table:{rowHead:"Xếp loại / Phỏng vấn",colHeads:["Vượt qua PV","Không vượt qua PV","Tổng cộng"],rows:[["Tốt nghiệp Giỏi","300","100","400"],["Không phải loại Giỏi","180","420","600"],["Tổng cộng","480","520","1.000"]]},
+statements:[
+{text:"Số ứng viên loại Giỏi vượt qua phỏng vấn là 300 người.",correct:true,expl:"400 × 75% = 300."},
+{text:"Xác suất chọn được ứng viên vượt qua phỏng vấn bằng 0,48.",correct:true,expl:"P = 480/1.000 = 0,48."},
+{text:"Xác suất chọn được ứng viên không phải loại Giỏi và không vượt qua phỏng vấn bằng 0,4.",correct:false,expl:"Giá trị đúng là 420/1.000 = 0,42 ≠ 0,4."},
+{text:"Biết ứng viên vượt qua phỏng vấn, xác suất ứng viên đó không phải loại Giỏi bằng 0,375.",correct:true,expl:"Che cột Không vượt qua PV: P = 180/480 = 0,375."}]},
+{id:12,dang:3,content:"Một kho hàng nhập 25% là hàng nhập khẩu, 75% là hàng nội địa. Tỉ lệ sản phẩm lỗi của hàng nhập khẩu là 4%, của hàng nội địa là 1%. Chọn ngẫu nhiên một sản phẩm bị lỗi trong lô 2.000 sản phẩm.",
+table:{rowHead:"Loại hàng / Chất lượng",colHeads:["Lỗi","Không lỗi","Tổng cộng"],rows:[["Hàng nhập khẩu","20","480","500"],["Hàng nội địa","15","1.485","1.500"],["Tổng cộng","35","1.965","2.000"]]},
+statements:[
+{text:"Số sản phẩm hàng nhập khẩu bị lỗi là 20 sản phẩm.",correct:true,expl:"500 × 4% = 20."},
+{text:"Xác suất chọn được sản phẩm lỗi bằng 0,0125.",correct:false,expl:"Giá trị đúng là 35/2.000 = 0,0175 ≠ 0,0125."},
+{text:"Xác suất chọn được sản phẩm hàng nội địa và bị lỗi bằng 0,0075.",correct:true,expl:"P = 15/2.000 = 0,0075."},
+{text:"Biết sản phẩm được chọn bị lỗi, xác suất sản phẩm đó là hàng nhập khẩu bằng 4/7 (≈0,5714).",correct:true,expl:"Che cột Không lỗi: P = 20/35 = 4/7 ≈ 0,5714."}]},
+{id:13,dang:3,content:"Tại một bệnh viện, 20% bệnh nhân nhập viện là người cao tuổi. Tỉ lệ xảy ra biến chứng sau phẫu thuật ở nhóm cao tuổi là 15%, ở nhóm còn lại là 5%. Chọn ngẫu nhiên một bệnh nhân trong 1.200 bệnh nhân đã phẫu thuật.",
+table:{rowHead:"Nhóm tuổi / Biến chứng",colHeads:["Có biến chứng","Không biến chứng","Tổng cộng"],rows:[["Cao tuổi","36","204","240"],["Không cao tuổi","48","912","960"],["Tổng cộng","84","1.116","1.200"]]},
+statements:[
+{text:"Số bệnh nhân cao tuổi có biến chứng là 36 người.",correct:true,expl:"240 × 15% = 36."},
+{text:"Xác suất chọn được bệnh nhân có biến chứng bằng 0,07.",correct:true,expl:"P = 84/1.200 = 0,07."},
+{text:"Xác suất chọn được bệnh nhân không cao tuổi và không biến chứng bằng 0,76.",correct:true,expl:"P = 912/1.200 = 0,76."},
+{text:"Biết bệnh nhân có biến chứng, xác suất bệnh nhân đó là người cao tuổi bằng 3/7 (≈0,4286).",correct:true,expl:"Che cột Không biến chứng: P = 36/84 = 3/7 ≈ 0,4286."}]},
+{id:14,dang:3,content:"Một ngân hàng có 35% hồ sơ vay là vay tín chấp, 65% là vay thế chấp. Tỉ lệ nợ xấu của khoản vay tín chấp là 6%, của khoản vay thế chấp là 2%. Chọn ngẫu nhiên một hồ sơ trong 1.000 hồ sơ vay.",
+table:{rowHead:"Hình thức vay / Nợ xấu",colHeads:["Nợ xấu","Không nợ xấu","Tổng cộng"],rows:[["Vay tín chấp","21","329","350"],["Vay thế chấp","13","637","650"],["Tổng cộng","34","966","1.000"]]},
+statements:[
+{text:"Số hồ sơ vay tín chấp bị nợ xấu là 21 hồ sơ.",correct:true,expl:"350 × 6% = 21."},
+{text:"Xác suất chọn được hồ sơ nợ xấu bằng 0,034.",correct:true,expl:"P = 34/1.000 = 0,034."},
+{text:"Xác suất chọn được hồ sơ vay thế chấp và không nợ xấu bằng 0,6.",correct:false,expl:"Giá trị đúng là 637/1.000 = 0,637 ≠ 0,6."},
+{text:"Biết hồ sơ nợ xấu, xác suất hồ sơ đó là vay tín chấp bằng 21/34 (≈0,6176).",correct:true,expl:"Che cột Không nợ xấu: P = 21/34 ≈ 0,6176."}]},
+{id:15,dang:3,content:"Một trường THPT có 55% học sinh khối 12 học ban Khoa học Tự nhiên, 45% học ban Khoa học Xã hội. Tỉ lệ đạt học sinh giỏi cấp tỉnh của ban Tự nhiên là 18%, của ban Xã hội là 10%. Chọn ngẫu nhiên một học sinh trong 2.000 học sinh khối 12.",
+table:{rowHead:"Ban học / Học sinh giỏi",colHeads:["Đạt HSG tỉnh","Không đạt","Tổng cộng"],rows:[["Ban KHTN","198","902","1.100"],["Ban KHXH","90","810","900"],["Tổng cộng","288","1.712","2.000"]]},
+statements:[
+{text:"Số học sinh ban Tự nhiên đạt học sinh giỏi cấp tỉnh là 198 học sinh.",correct:true,expl:"1.100 × 18% = 198."},
+{text:"Xác suất chọn được học sinh đạt học sinh giỏi cấp tỉnh bằng 0,144.",correct:true,expl:"P = 288/2.000 = 0,144."},
+{text:"Xác suất chọn được học sinh ban Xã hội và không đạt học sinh giỏi bằng 0,405.",correct:true,expl:"P = 810/2.000 = 0,405."},
+{text:"Biết học sinh đạt học sinh giỏi cấp tỉnh, xác suất học sinh đó học ban Tự nhiên bằng 0,65.",correct:false,expl:"Giá trị đúng là 198/288 = 11/16 = 0,6875 ≠ 0,65."}]},
+
+{id:16,dang:4,content:"Một trường đại học có 800 sinh viên năm cuối, gồm hai khoa Kinh tế và Kỹ thuật. Tỉ lệ sinh viên có việc làm sau 6 tháng tốt nghiệp của khoa Kinh tế là 70%, của khoa Kỹ thuật là 50%. Biết trong số sinh viên có việc làm, tỉ lệ thuộc khoa Kinh tế là 7/12. Gọi x là số sinh viên khoa Kinh tế.",
+note:"Lập phương trình: 0,7x / [0,7x + 0,5(800 − x)] = 7/12. Giải ra x = 400.",
+table:{rowHead:"Khoa / Việc làm",colHeads:["Có việc làm","Chưa có việc làm","Tổng cộng"],rows:[["Khoa Kinh tế","280","120","400"],["Khoa Kỹ thuật","200","200","400"],["Tổng cộng","480","320","800"]]},
+statements:[
+{text:"Số sinh viên khoa Kinh tế là 400 sinh viên.",correct:true,expl:"Giải phương trình được x = 400."},
+{text:"Xác suất chọn được sinh viên có việc làm bằng 0,6.",correct:true,expl:"P = 480/800 = 0,6."},
+{text:"Xác suất chọn được sinh viên khoa Kỹ thuật và chưa có việc làm bằng 0,3.",correct:false,expl:"Giá trị đúng là 200/800 = 0,25 ≠ 0,3."},
+{text:"Biết sinh viên có việc làm, xác suất sinh viên đó thuộc khoa Kinh tế bằng 7/12.",correct:true,expl:"Đúng bằng dữ kiện đề cho, P = 280/480 = 7/12."}]},
+{id:17,dang:4,content:"Một khu chung cư có 600 hộ dân, gồm hai toà A và B. Tỉ lệ hộ lắp đặt điện mặt trời áp mái ở toà A là 60%, ở toà B là 20%. Biết trong số hộ đã lắp đặt, tỉ lệ thuộc toà A là 3/4. Gọi x là số hộ dân toà A.",
+note:"Lập phương trình: 0,6x / [0,6x + 0,2(600 − x)] = 3/4. Giải ra x = 300.",
+table:{rowHead:"Toà nhà / Điện mặt trời",colHeads:["Đã lắp đặt","Chưa lắp đặt","Tổng cộng"],rows:[["Toà A","180","120","300"],["Toà B","60","240","300"],["Tổng cộng","240","360","600"]]},
+statements:[
+{text:"Số hộ dân toà A là 300 hộ.",correct:true,expl:"Giải phương trình được x = 300."},
+{text:"Xác suất chọn được hộ đã lắp đặt điện mặt trời bằng 0,45.",correct:false,expl:"Giá trị đúng là 240/600 = 0,4 ≠ 0,45."},
+{text:"Xác suất chọn được hộ toà B và chưa lắp đặt bằng 0,4.",correct:true,expl:"P = 240/600 = 0,4."},
+{text:"Biết hộ đã lắp đặt điện mặt trời, xác suất hộ đó thuộc toà A bằng 0,75.",correct:true,expl:"Đúng bằng dữ kiện đề cho, P = 180/240 = 0,75."}]},
+{id:18,dang:4,content:"Một hệ thống rạp chiếu phim có 1.000 vé bán ra trong ngày, gồm hai loại: vé đặt online và vé mua tại quầy. Tỉ lệ khách dùng mã giảm giá của vé online là 40%, của vé mua tại quầy là 20%. Biết trong số khách dùng mã giảm giá, tỉ lệ vé online là 3/4. Gọi x là số vé online.",
+note:"Lập phương trình: 0,4x / [0,4x + 0,2(1.000 − x)] = 3/4. Giải ra x = 600.",
+table:{rowHead:"Loại vé / Mã giảm giá",colHeads:["Có dùng mã","Không dùng mã","Tổng cộng"],rows:[["Vé online","240","360","600"],["Vé tại quầy","80","320","400"],["Tổng cộng","320","680","1.000"]]},
+statements:[
+{text:"Số vé online bán ra là 600 vé.",correct:true,expl:"Giải phương trình được x = 600."},
+{text:"Xác suất chọn được vé có dùng mã giảm giá bằng 0,32.",correct:true,expl:"P = 320/1.000 = 0,32."},
+{text:"Xác suất chọn được vé tại quầy và có dùng mã giảm giá bằng 0,1.",correct:false,expl:"Giá trị đúng là 80/1.000 = 0,08 ≠ 0,1."},
+{text:"Biết vé có dùng mã giảm giá, xác suất vé đó là vé online bằng 0,75.",correct:true,expl:"Đúng bằng dữ kiện đề cho, P = 240/320 = 0,75."}]},
+{id:19,dang:4,content:"Một siêu thị có 600 giao dịch trong ngày, gồm nhóm khách hàng thành viên và nhóm khách vãng lai. Tỉ lệ giao dịch từ 500 nghìn đồng trở lên của khách thành viên là 20%, của khách vãng lai là 15%. Biết trong số giao dịch từ 500 nghìn trở lên, tỉ lệ thuộc khách thành viên là 2/5. Gọi x là số giao dịch của khách thành viên.",
+note:"Lập phương trình: 0,2x / [0,2x + 0,15(600 − x)] = 2/5. Giải ra x = 200.",
+table:{rowHead:"Nhóm khách / Giá trị GD",colHeads:["Từ 500 nghìn trở lên","Dưới 500 nghìn","Tổng cộng"],rows:[["Khách thành viên","40","160","200"],["Khách vãng lai","60","340","400"],["Tổng cộng","100","500","600"]]},
+statements:[
+{text:"Số giao dịch của khách thành viên là 200 giao dịch.",correct:true,expl:"Giải phương trình được x = 200."},
+{text:"Xác suất chọn được giao dịch của khách thành viên và dưới 500 nghìn bằng 0,3.",correct:false,expl:"Giá trị đúng là 160/600 ≈ 0,2667 ≠ 0,3."},
+{text:"Xác suất chọn được giao dịch từ 500 nghìn trở lên bằng 1/6 (≈0,1667).",correct:true,expl:"P = 100/600 = 1/6 ≈ 0,1667."},
+{text:"Biết giao dịch từ 500 nghìn trở lên, xác suất giao dịch đó của khách thành viên bằng 0,4.",correct:true,expl:"Đúng bằng dữ kiện đề cho, P = 40/100 = 0,4."}]},
+{id:20,dang:4,content:"Một trung tâm y tế có 500 lượt khám trong tuần, gồm nhóm khám theo lịch hẹn và nhóm khám vãng lai (không hẹn trước). Tỉ lệ thời gian chờ dưới 15 phút của nhóm có hẹn là 25%, của nhóm vãng lai là 10%. Biết trong số lượt khám có thời gian chờ dưới 15 phút, tỉ lệ thuộc nhóm có hẹn là 5/8. Gọi x là số lượt khám có hẹn.",
+note:"Lập phương trình: 0,25x / [0,25x + 0,1(500 − x)] = 5/8. Giải ra x = 200.",
+table:{rowHead:"Hình thức khám / Chờ",colHeads:["Chờ dưới 15 phút","Chờ từ 15 phút","Tổng cộng"],rows:[["Có hẹn trước","50","150","200"],["Khám vãng lai","30","270","300"],["Tổng cộng","80","420","500"]]},
+statements:[
+{text:"Số lượt khám có hẹn trước là 200 lượt.",correct:true,expl:"Giải phương trình được x = 200."},
+{text:"Xác suất chọn được lượt khám có thời gian chờ dưới 15 phút bằng 0,16.",correct:true,expl:"P = 80/500 = 0,16."},
+{text:"Xác suất chọn được lượt khám vãng lai và chờ từ 15 phút trở lên bằng 0,54.",correct:true,expl:"P = 270/500 = 0,54."},
+{text:"Biết lượt khám có thời gian chờ dưới 15 phút, xác suất lượt đó thuộc nhóm có hẹn trước bằng 0,6.",correct:false,expl:"Giá trị đúng là 50/80 = 0,625 ≠ 0,6."}]},
+
+{id:21,dang:5,content:"Tại một sân bay, tỉ lệ hành khách mang vật cấm trong hành lý là 2% (mẫu tính toán: 5.000 khách). Máy quét an ninh (lần 1) phát hiện đúng 90% trường hợp mang vật cấm, báo động nhầm với 4% trường hợp không mang. Những trường hợp báo động ở lần 1 được kiểm tra thủ công (lần 2): phát hiện đúng 90% ca thực sự mang vật cấm, báo nhầm với 25% ca không mang. Tính xác suất một hành khách thực sự mang vật cấm, biết người đó bị báo động ở cả hai lần kiểm tra.",
+note:"Bảng 1 (mẫu gốc 5.000) dùng tỉ lệ mang vật cấm và độ chính xác lần 1. Bảng 2 (mẫu mới 286, gồm các ca báo động ở lần 1) dùng độ chính xác lần 2.",
+table:{rowHead:"Trạng thái / Lần 1",colHeads:["Báo động","Không báo động","Tổng cộng"],rows:[["Mang vật cấm","90","10","100"],["Không mang","196","4.704","4.900"],["Tổng cộng","286","4.714","5.000"]]},
+table2:{rowHead:"Trạng thái / Lần 2",colHeads:["Báo động","Không báo động","Tổng mẫu mới"],rows:[["Mang vật cấm","81","9","90"],["Không mang","49","147","196"],["Tổng cộng","130","156","286"]]},
+statements:[
+{text:"Số hành khách mang vật cấm bị báo động ở lần kiểm tra thứ nhất là 90 người.",correct:true,expl:"100 × 90% = 90."},
+{text:"Xác suất một hành khách bị báo động ở lần 1 bằng 0,06.",correct:false,expl:"Giá trị đúng là 286/5.000 = 0,0572 ≠ 0,06."},
+{text:"Xác suất một hành khách không mang vật cấm và bị báo động ở lần kiểm tra thứ nhất bằng 0,0392.",correct:true,expl:"P = 196/5.000 = 0,0392."},
+{text:"Biết hành khách bị báo động ở cả hai lần kiểm tra, xác suất người đó thực sự mang vật cấm bằng 81/130 (≈0,6231).",correct:true,expl:"Che cột Không báo động ở Bảng 2: P = 81/130 ≈ 0,6231."}]},
+{id:22,dang:5,content:"Một trung tâm xét nghiệm ma tuý kiểm tra 8.000 mẫu, tỉ lệ mẫu thực sự dương tính là 1%. Xét nghiệm nhanh (lần 1) cho kết quả đúng với 75% ca thực dương, báo nhầm với 5% ca thực âm. Các mẫu dương tính ở lần 1 được xét nghiệm khẳng định (lần 2): đúng với 50% ca thực dương, báo nhầm với 25% ca thực âm. Tính xác suất một mẫu thực sự dương tính, biết mẫu đó dương tính ở cả hai lần xét nghiệm.",
+note:"Bảng 1 (mẫu gốc 8.000). Bảng 2 (mẫu mới 456, gồm các ca dương tính ở lần 1).",
+table:{rowHead:"Trạng thái / Lần 1",colHeads:["Dương tính","Âm tính","Tổng cộng"],rows:[["Thực dương tính","60","20","80"],["Thực âm tính","396","7.524","7.920"],["Tổng cộng","456","7.544","8.000"]]},
+table2:{rowHead:"Trạng thái / Lần 2",colHeads:["Dương tính","Âm tính","Tổng mẫu mới"],rows:[["Thực dương tính","30","30","60"],["Thực âm tính","99","297","396"],["Tổng cộng","129","327","456"]]},
+statements:[
+{text:"Số mẫu thực dương tính có kết quả dương tính ở lần 1 là 60 mẫu.",correct:true,expl:"80 × 75% = 60."},
+{text:"Xác suất một mẫu dương tính ở lần 1 bằng 0,057.",correct:true,expl:"P = 456/8.000 = 0,057."},
+{text:"Xác suất một mẫu thực âm tính và có kết quả dương tính (báo nhầm) ở lần xét nghiệm thứ nhất bằng 0,0495.",correct:true,expl:"P = 396/8.000 = 0,0495."},
+{text:"Biết mẫu dương tính ở cả hai lần xét nghiệm, xác suất mẫu đó thực sự dương tính bằng 0,25.",correct:false,expl:"Giá trị đúng là 30/129 = 10/43 ≈ 0,2326 ≠ 0,25."}]},
+{id:23,dang:5,content:"Một dây chuyền sản xuất kiểm tra 6.000 sản phẩm, tỉ lệ sản phẩm có lỗi tiềm ẩn là 2%. Trạm kiểm tra tự động (lần 1) phát hiện đúng 80% sản phẩm lỗi, báo nhầm với 10% sản phẩm tốt. Các sản phẩm bị báo lỗi ở lần 1 được kiểm tra thủ công (lần 2): phát hiện đúng 75% sản phẩm thực sự lỗi, báo nhầm với 25% sản phẩm tốt. Tính xác suất một sản phẩm thực sự có lỗi, biết sản phẩm đó bị báo lỗi ở cả hai lần kiểm tra.",
+note:"Bảng 1 (mẫu gốc 6.000). Bảng 2 (mẫu mới 684, gồm các sản phẩm báo lỗi ở lần 1).",
+table:{rowHead:"Trạng thái / Lần 1",colHeads:["Báo lỗi","Không báo lỗi","Tổng cộng"],rows:[["Thực sự có lỗi","96","24","120"],["Thực sự không lỗi","588","5.292","5.880"],["Tổng cộng","684","5.316","6.000"]]},
+table2:{rowHead:"Trạng thái / Lần 2",colHeads:["Báo lỗi","Không báo lỗi","Tổng mẫu mới"],rows:[["Thực sự có lỗi","72","24","96"],["Thực sự không lỗi","147","441","588"],["Tổng cộng","219","465","684"]]},
+statements:[
+{text:"Số sản phẩm thực sự có lỗi bị báo lỗi ở lần kiểm tra thứ nhất là 96 sản phẩm.",correct:true,expl:"120 × 80% = 96."},
+{text:"Xác suất một sản phẩm bị báo lỗi ở lần 1 bằng 0,114.",correct:true,expl:"P = 684/6.000 = 0,114."},
+{text:"Xác suất một sản phẩm thực sự không lỗi và bị báo lỗi ở lần 1 bằng 0,08.",correct:false,expl:"Giá trị đúng là 588/6.000 = 0,098 ≠ 0,08."},
+{text:"Biết sản phẩm bị báo lỗi ở cả hai lần kiểm tra, xác suất sản phẩm đó thực sự có lỗi bằng 24/73 (≈0,3288).",correct:true,expl:"Che cột Không báo lỗi ở Bảng 2: P = 72/219 = 24/73 ≈ 0,3288."}]},
+{id:24,dang:5,content:"Một kỳ thi tuyển sinh có 4.000 bài thi, tỉ lệ bài có gian lận là 1%. Phần mềm chống gian lận (vòng 1) phát hiện đúng 90% bài gian lận, báo nhầm với 10% bài không gian lận. Các bài bị nghi vấn ở vòng 1 được hội đồng thẩm định (vòng 2): xác nhận đúng 75% bài thực sự gian lận, xác nhận nhầm 25% bài không gian lận. Tính xác suất một bài thi thực sự gian lận, biết bài đó bị nghi vấn ở cả hai vòng.",
+note:"Bảng 1 (mẫu gốc 4.000). Bảng 2 (mẫu mới 432, gồm các bài bị nghi vấn ở vòng 1).",
+table:{rowHead:"Trạng thái / Vòng 1",colHeads:["Bị nghi vấn","Không nghi vấn","Tổng cộng"],rows:[["Thực sự gian lận","36","4","40"],["Không gian lận","396","3.564","3.960"],["Tổng cộng","432","3.568","4.000"]]},
+table2:{rowHead:"Trạng thái / Vòng 2",colHeads:["Bị nghi vấn","Không nghi vấn","Tổng mẫu mới"],rows:[["Thực sự gian lận","27","9","36"],["Không gian lận","99","297","396"],["Tổng cộng","126","306","432"]]},
+statements:[
+{text:"Số bài thi thực sự gian lận bị nghi vấn ở vòng 1 là 36 bài.",correct:true,expl:"40 × 90% = 36."},
+{text:"Xác suất một bài thi bị nghi vấn ở vòng 1 bằng 0,1.",correct:false,expl:"Giá trị đúng là 432/4.000 = 0,108 ≠ 0,1."},
+{text:"Xác suất một bài thi không gian lận nhưng bị nghi vấn (oan) ở vòng 1 bằng 0,099.",correct:true,expl:"P = 396/4.000 = 0,099."},
+{text:"Biết bài thi bị nghi vấn ở cả hai vòng, xác suất bài đó thực sự gian lận bằng 3/14 (≈0,2143).",correct:true,expl:"Che cột Không nghi vấn ở Bảng 2: P = 27/126 = 3/14 ≈ 0,2143."}]},
+{id:25,dang:5,content:"Một hệ thống email có 10.000 thư đến trong ngày, tỉ lệ thư là spam thực sự chiếm 10%. Bộ lọc spam (lần 1) đánh dấu đúng 95% thư spam, đánh dấu nhầm 5% thư hợp lệ. Các thư bị đánh dấu ở lần 1 được bộ lọc nâng cao kiểm tra lại (lần 2): đúng với 90% thư spam thực sự, nhầm với 20% thư hợp lệ. Tính xác suất một thư thực sự là spam, biết thư đó bị đánh dấu ở cả hai lần lọc.",
+note:"Bảng 1 (mẫu gốc 10.000). Bảng 2 (mẫu mới 1.400, gồm các thư bị đánh dấu ở lần 1).",
+table:{rowHead:"Trạng thái / Lần 1",colHeads:["Bị đánh dấu","Không bị đánh dấu","Tổng cộng"],rows:[["Thực sự spam","950","50","1.000"],["Thư hợp lệ","450","8.550","9.000"],["Tổng cộng","1.400","8.600","10.000"]]},
+table2:{rowHead:"Trạng thái / Lần 2",colHeads:["Bị đánh dấu","Không bị đánh dấu","Tổng mẫu mới"],rows:[["Thực sự spam","855","95","950"],["Thư hợp lệ","90","360","450"],["Tổng cộng","945","455","1.400"]]},
+statements:[
+{text:"Số thư thực sự spam bị đánh dấu ở lần lọc thứ nhất là 950 thư.",correct:true,expl:"1.000 × 95% = 950."},
+{text:"Xác suất một thư bị đánh dấu ở lần 1 bằng 0,15.",correct:false,expl:"Giá trị đúng là 1.400/10.000 = 0,14 ≠ 0,15."},
+{text:"Xác suất một thư hợp lệ nhưng bị đánh dấu (báo nhầm) ở lần lọc thứ nhất bằng 0,045.",correct:true,expl:"P = 450/10.000 = 0,045."},
+{text:"Biết thư bị đánh dấu ở cả hai lần lọc, xác suất thư đó thực sự là spam bằng 19/21 (≈0,9048).",correct:true,expl:"Che cột Không bị đánh dấu ở Bảng 2: P = 855/945 = 19/21 ≈ 0,9048."}]},
+
+{id:26,dang:6,content:"Một công ty có 1.000 nhân viên chia thành ba phòng ban: Kinh doanh (400 người, tỉ lệ hoàn thành KPI 75%), Marketing (300 người, tỉ lệ 60%), Kỹ thuật (300 người, tỉ lệ 50%). Chọn ngẫu nhiên một nhân viên đã hoàn thành KPI.",
+table:{rowHead:"Phòng ban / KPI",colHeads:["Hoàn thành","Không hoàn thành","Tổng cộng"],rows:[["Kinh doanh","300","100","400"],["Marketing","180","120","300"],["Kỹ thuật","150","150","300"],["Tổng cộng","630","370","1.000"]]},
+statements:[
+{text:"Số nhân viên phòng Kinh doanh hoàn thành KPI là 300 người.",correct:true,expl:"400 × 75% = 300."},
+{text:"Xác suất chọn được nhân viên hoàn thành KPI bằng 0,63.",correct:true,expl:"P = 630/1.000 = 0,63."},
+{text:"Xác suất chọn được nhân viên phòng Kỹ thuật và không hoàn thành KPI bằng 0,2.",correct:false,expl:"Giá trị đúng là 150/1.000 = 0,15 ≠ 0,2."},
+{text:"Biết nhân viên đã hoàn thành KPI, xác suất người đó thuộc phòng Marketing bằng 2/7 (≈0,2857).",correct:true,expl:"Che các dòng khác: P = 180/630 = 2/7 ≈ 0,2857."}]},
+{id:27,dang:6,content:"Một trường THPT có 1.000 học sinh khối 12 chia theo ba khối lớp dự thi học sinh giỏi Văn: khối lớp 10 (350 em, tỉ lệ đạt giải 8%), khối lớp 11 (320 em, tỉ lệ 15%), khối lớp 12 (330 em, tỉ lệ 20%). Chọn ngẫu nhiên một học sinh đạt giải.",
+table:{rowHead:"Khối lớp / Kết quả",colHeads:["Đạt giải","Không đạt giải","Tổng cộng"],rows:[["Khối lớp 10","28","322","350"],["Khối lớp 11","48","272","320"],["Khối lớp 12","66","264","330"],["Tổng cộng","142","858","1.000"]]},
+statements:[
+{text:"Số học sinh khối lớp 11 đạt giải là 48 học sinh.",correct:true,expl:"320 × 15% = 48."},
+{text:"Xác suất chọn được học sinh đạt giải bằng 0,15.",correct:false,expl:"Giá trị đúng là 142/1.000 = 0,142 ≠ 0,15."},
+{text:"Xác suất chọn được học sinh khối lớp 10 và không đạt giải bằng 0,322.",correct:true,expl:"P = 322/1.000 = 0,322."},
+{text:"Biết học sinh đạt giải, xác suất học sinh đó thuộc khối lớp 12 bằng 33/71 (≈0,4648).",correct:true,expl:"Che các dòng khác: P = 66/142 = 33/71 ≈ 0,4648."}]},
+{id:28,dang:6,content:"Một bệnh viện điều trị 1.000 ca COVID-19 được phân loại theo mức độ: nhẹ (500 ca, tỉ lệ chuyển nặng 2%), vừa (300 ca, tỉ lệ 10%), nặng ngay từ đầu (200 ca, tỉ lệ diễn tiến nguy kịch 25%). Chọn ngẫu nhiên một ca có diễn tiến chuyển nặng/nguy kịch.",
+table:{rowHead:"Mức độ ban đầu / Diễn tiến",colHeads:["Chuyển nặng","Không chuyển nặng","Tổng cộng"],rows:[["Mức độ nhẹ","10","490","500"],["Mức độ vừa","30","270","300"],["Mức độ nặng","50","150","200"],["Tổng cộng","90","910","1.000"]]},
+statements:[
+{text:"Số ca mức độ vừa chuyển nặng là 30 ca.",correct:true,expl:"300 × 10% = 30."},
+{text:"Xác suất chọn được ca chuyển nặng bằng 0,09.",correct:true,expl:"P = 90/1.000 = 0,09."},
+{text:"Xác suất chọn được ca mức độ nặng ban đầu và không chuyển nặng thêm bằng 0,15.",correct:true,expl:"P = 150/1.000 = 0,15."},
+{text:"Biết ca đó chuyển nặng, xác suất ca này thuộc nhóm mức độ nhẹ ban đầu bằng 0,15.",correct:false,expl:"Giá trị đúng là 10/90 = 1/9 ≈ 0,1111 ≠ 0,15."}]},
+{id:29,dang:6,content:"Một ngân hàng phân loại 1.000 khoản vay theo bốn nhóm khách hàng: A (200 khoản, tỉ lệ nợ xấu 5%), B (300 khoản, tỉ lệ 3%), C (300 khoản, tỉ lệ 2%), D (200 khoản, tỉ lệ 8%). Chọn ngẫu nhiên một khoản vay bị nợ xấu.",
+table:{rowHead:"Nhóm khách hàng / Nợ xấu",colHeads:["Nợ xấu","Không nợ xấu","Tổng cộng"],rows:[["Nhóm A","10","190","200"],["Nhóm B","9","291","300"],["Nhóm C","6","294","300"],["Nhóm D","16","184","200"],["Tổng cộng","41","959","1.000"]]},
+statements:[
+{text:"Số khoản vay nhóm C bị nợ xấu là 8 khoản.",correct:false,expl:"Giá trị đúng là 300 × 2% = 6 khoản ≠ 8."},
+{text:"Xác suất chọn được khoản vay nợ xấu bằng 0,041.",correct:true,expl:"P = 41/1.000 = 0,041."},
+{text:"Xác suất chọn được khoản vay nhóm A và không nợ xấu bằng 0,19.",correct:true,expl:"P = 190/1.000 = 0,19."},
+{text:"Biết khoản vay bị nợ xấu, xác suất khoản đó thuộc nhóm D bằng 16/41 (≈0,3902).",correct:true,expl:"Che các dòng khác: P = 16/41 ≈ 0,3902."}]},
+{id:30,dang:6,content:"Một chuỗi siêu thị có 1.000 đơn hàng online phân theo ba chi nhánh: CN1 (600 đơn, tỉ lệ huỷ 4%), CN2 (250 đơn, tỉ lệ huỷ 8%), CN3 (150 đơn, tỉ lệ huỷ 12%). Chọn ngẫu nhiên một đơn hàng bị huỷ.",
+table:{rowHead:"Chi nhánh / Đơn hàng",colHeads:["Bị huỷ","Không bị huỷ","Tổng cộng"],rows:[["Chi nhánh 1","24","576","600"],["Chi nhánh 2","20","230","250"],["Chi nhánh 3","18","132","150"],["Tổng cộng","62","938","1.000"]]},
+statements:[
+{text:"Số đơn hàng của chi nhánh 2 bị huỷ là 20 đơn.",correct:true,expl:"250 × 8% = 20."},
+{text:"Xác suất chọn được đơn hàng bị huỷ bằng 0,062.",correct:true,expl:"P = 62/1.000 = 0,062."},
+{text:"Xác suất chọn được đơn hàng của chi nhánh 1 và không bị huỷ bằng 0,6.",correct:false,expl:"Giá trị đúng là 576/1.000 = 0,576 ≠ 0,6."},
+{text:"Biết đơn hàng bị huỷ, xác suất đơn đó thuộc chi nhánh 3 bằng 9/31 (≈0,2903).",correct:true,expl:"Che các dòng khác: P = 18/62 = 9/31 ≈ 0,2903."}]},
+];
+
+const DANG_NAMES = {1:"Bảng hai chiều — số liệu tuyệt đối",2:"Bảng hai chiều — tỉ lệ phần trăm",3:"Bài toán ngược (Bayes)",4:"Ẩn dữ liệu lõi (đặt ẩn x)",5:"Xét nghiệm kép / liên tiếp",6:"Phân hoạch nhiều nhóm"};
+const DIFF_TAG = {1:{label:"Dễ",cls:"diff-1"},2:{label:"Dễ",cls:"diff-1"},3:{label:"Trung bình",cls:"diff-2"},6:{label:"Trung bình",cls:"diff-2"},4:{label:"Khó",cls:"diff-3"},5:{label:"Khó",cls:"diff-3"}};
+const LABELS=["a","b","c","d"];
+const EXAM_TIME=20*60;
+const NUM_Q=5;
+
+/* ================= STATE ================= */
+let exam=[];
+let answers=[];
+let curQ=0;
+let timeLeft=EXAM_TIME;
+let timerInt=null;
+let studentName="";
+
+document.getElementById("start-btn").addEventListener("click", ()=>{
+  const nameInput=document.getElementById("student-name");
+  const name=nameInput.value.trim();
+  if(!name){
+    nameInput.classList.add("error");
+    document.getElementById("name-error").classList.add("show");
+    nameInput.focus();
+    return;
+  }
+  nameInput.classList.remove("error");
+  document.getElementById("name-error").classList.remove("show");
+  studentName=name;
+  startExam();
+});
+document.getElementById("student-name").addEventListener("input", function(){
+  if(this.value.trim()){
+    this.classList.remove("error");
+    document.getElementById("name-error").classList.remove("show");
+  }
+});
+document.getElementById("retry-btn").addEventListener("click", ()=>location.reload());
+
+/* Chọn đề: 1 câu Dạng1, 1 câu Dạng2, 1 câu (Dạng3 hoặc Dạng6), 1 câu Dạng4, 1 câu Dạng5.
+   Sắp xếp theo thứ tự dễ -> khó: Dạng1, Dạng2, (Dạng3/6), Dạng4, Dạng5. */
+function pickExam(){
+  const byDang={};
+  QUESTION_BANK.forEach(q=>{ (byDang[q.dang]=byDang[q.dang]||[]).push(q); });
+  const pickRandom=(arr)=> arr[Math.floor(Math.random()*arr.length)];
+  const q1=pickRandom(byDang[1]);
+  const q2=pickRandom(byDang[2]);
+  const pool36=byDang[3].concat(byDang[6]);
+  const q36=pickRandom(pool36);
+  const q4=pickRandom(byDang[4]);
+  const q5=pickRandom(byDang[5]);
+  return [q1,q2,q36,q4,q5];
+}
+
+function startExam(){
+  exam=pickExam();
+  answers=exam.map(()=>[null,null,null,null]);
+  curQ=0;
+  timeLeft=EXAM_TIME;
+  document.getElementById("screen-landing").classList.add("hidden");
+  document.getElementById("screen-quiz").classList.remove("hidden");
+  buildNavDots();
+  renderQuestion();
+  startTimer();
+}
+
+/* ================= TIMER ================= */
+function startTimer(){
+  updateTimerDisplay();
+  timerInt=setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){
+      clearInterval(timerInt);
+      submitExam(true);
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  const el=document.getElementById("timer");
+  el.textContent="⏱ "+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  el.classList.toggle("low", timeLeft<=180);
+}
+
+/* ================= NAV DOTS ================= */
+function buildNavDots(){
+  const box=document.getElementById("nav-dots");
+  box.innerHTML="";
+  for(let i=0;i<NUM_Q;i++){
+    const d=document.createElement("button");
+    d.className="dot";
+    d.textContent=i+1;
+    d.addEventListener("click", ()=>{ curQ=i; renderQuestion(); });
+    box.appendChild(d);
+  }
+  refreshNavDots();
+}
+function refreshNavDots(){
+  const dots=document.querySelectorAll("#nav-dots .dot");
+  dots.forEach((d,i)=>{
+    const ans=answers[i];
+    const filled=ans.filter(a=>a!==null).length;
+    d.classList.toggle("answered", filled===4);
+    d.classList.toggle("partial", filled>0 && filled<4);
+    d.classList.toggle("current", i===curQ);
+  });
+}
+
+/* ================= RENDER QUESTION ================= */
+function renderQuestion(){
+  const q=exam[curQ];
+  const diff=DIFF_TAG[q.dang];
+  const card=document.getElementById("question-card");
+  let html=`<span class="q-tag">Câu ${curQ+1} / ${NUM_Q} · Dạng ${q.dang} — ${DANG_NAMES[q.dang]}</span>
+    <span class="diff-badge ${diff.cls}">${diff.label}</span>
+    <div class="q-content" style="margin-top:10px;">${q.content}</div>`;
+  q.statements.forEach((st,si)=>{
+    const val=answers[curQ][si];
+    html+=`<div class="statement">
+      <div class="st-text"><span class="st-label">${LABELS[si]})</span>${st.text}</div>
+      <div class="toggle">
+        <button data-si="${si}" data-val="true" class="${val===true?'sel-true':''}">Đúng</button>
+        <button data-si="${si}" data-val="false" class="${val===false?'sel-false':''}">Sai</button>
+      </div>
+    </div>`;
+  });
+  card.innerHTML=html;
+  card.querySelectorAll(".toggle button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const si=+btn.dataset.si;
+      const val=btn.dataset.val==="true";
+      answers[curQ][si]=val;
+      renderQuestion();
+      refreshNavDots();
+    });
+  });
+  refreshNavDots();
+  document.getElementById("prev-btn").disabled=(curQ===0);
+  document.getElementById("next-btn").disabled=(curQ===NUM_Q-1);
+}
+
+document.getElementById("prev-btn").addEventListener("click", ()=>{ if(curQ>0){curQ--; renderQuestion();} });
+document.getElementById("next-btn").addEventListener("click", ()=>{ if(curQ<NUM_Q-1){curQ++; renderQuestion();} });
+document.getElementById("submit-btn").addEventListener("click", ()=>{
+  const unanswered = answers.filter(a=>a.some(x=>x===null)).length;
+  let msg="Bạn có chắc chắn muốn nộp bài?";
+  if(unanswered>0) msg=`Còn ${unanswered} câu chưa trả lời đầy đủ. Bạn vẫn muốn nộp bài?`;
+  if(confirm(msg)) submitExam(false);
+});
+
+/* ================= SCORING ================= */
+function ratioForCount(n){
+  if(n===4) return 1.0;
+  if(n===3) return 0.5;
+  if(n===2) return 0.25;
+  if(n===1) return 0.1;
+  return 0;
+}
+function submitExam(auto){
+  clearInterval(timerInt);
+  const perQMax = 10/NUM_Q;
+  let total=0;
+  const details=[];
+  exam.forEach((q,qi)=>{
+    let correctCount=0;
+    q.statements.forEach((st,si)=>{ if(answers[qi][si]===st.correct) correctCount++; });
+    const ratio=ratioForCount(correctCount);
+    const pts=ratio*perQMax;
+    total+=pts;
+    details.push({q, qi, correctCount, pts});
+  });
+  document.getElementById("screen-quiz").classList.add("hidden");
+  document.getElementById("screen-results").classList.remove("hidden");
+  document.getElementById("score-total").textContent=total.toFixed(2);
+  document.getElementById("score-name").textContent=studentName;
+  document.getElementById("score-sub").textContent = auto ? "Hết giờ — bài tự động nộp" : "Đã nộp bài thành công";
+  document.getElementById("rank-link").href = RANKING_SHEET_URL;
+  renderResults(details);
+  saveScoreToRanking(total, details);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ================= LƯU KẾT QUẢ VÀO GOOGLE SHEET (bảng xếp hạng) ================= */
+function saveScoreToRanking(total, details){
+  const statusEl=document.getElementById("save-status");
+  if(!GOOGLE_FORM_ACTION_URL || GOOGLE_FORM_ACTION_URL.indexOf("PASTE_")===0){
+    statusEl.textContent="⚠ Chưa thiết lập bảng xếp hạng (xem hướng dẫn cho giáo viên).";
+    return;
+  }
+  const dangList = details.map(d=>d.q.dang).join(",");
+  const detailText = `Đúng ý: ${details.map(d=>d.correctCount+"/4").join(" | ")} · Dạng câu: ${dangList}`;
+  const body = new URLSearchParams();
+  body.append(ENTRY_NAME, studentName);
+  body.append(ENTRY_SCORE, total.toFixed(2));
+  if(ENTRY_DETAIL && ENTRY_DETAIL.indexOf("PASTE_")!==0) body.append(ENTRY_DETAIL, detailText);
+  fetch(GOOGLE_FORM_ACTION_URL, {
+    method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    body: body.toString()
+  }).then(()=>{
+    statusEl.textContent="✓ Đã lưu điểm vào bảng xếp hạng.";
+  }).catch(()=>{
+    statusEl.textContent="⚠ Không lưu được điểm (kiểm tra kết nối mạng).";
+  });
+}
+
+function buildTableHTML(t, caption){
+  let html=`<div class="solution-tablewrap"><table class="two-way">`;
+  if(caption) html+=`<caption>${caption}</caption>`;
+  html+=`<thead><tr><th>${t.rowHead}</th>`;
+  t.colHeads.forEach(h=> html+=`<th>${h}</th>`);
+  html+=`</tr></thead><tbody>`;
+  t.rows.forEach(row=>{
+    html+=`<tr>`;
+    row.forEach(cell=> html+=`<td>${cell}</td>`);
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  return html;
+}
+
+function renderResults(details){
+  const box=document.getElementById("review-list");
+  box.innerHTML="";
+  details.forEach(({q,qi,correctCount,pts})=>{
+    const div=document.createElement("div");
+    div.className="card review-q";
+    const solId=`sol-${qi}`;
+    let html=`<div class="review-head">
+        <span class="q-tag" style="margin-bottom:0;">Câu ${qi+1} · Dạng ${q.dang} — ${DANG_NAMES[q.dang]}</span>
+        <span class="qscore">${correctCount}/4 ý đúng · ${pts.toFixed(2)} đ</span>
+      </div>
+      <div class="q-content">${q.content}</div>`;
+    q.statements.forEach((st,si)=>{
+      const userVal=answers[qi][si];
+      const isOk=userVal===st.correct;
+      const userTxt = userVal===null ? "chưa chọn" : (userVal? "Đúng":"Sai");
+      const correctTxt = st.correct? "Đúng":"Sai";
+      html+=`<div class="review-st">
+          <div class="mark ${isOk?'ok':'no'}">${isOk?'✓':'✕'}</div>
+          <div class="review-body">
+            <div class="st-text"><span class="st-label">${LABELS[si]})</span>${st.text}</div>
+            <div class="meta">Bạn chọn: <b>${userTxt}</b> &nbsp;·&nbsp; Đáp án đúng: <b>${correctTxt}</b></div>
+            <div class="expl">${st.expl||""}</div>
+          </div>
+        </div>`;
+    });
+    html+=`<button class="solution-toggle" data-target="${solId}">📖 Xem lời giải chi tiết bằng bảng hai chiều</button>
+      <div class="solution-box hidden" id="${solId}">`;
+    if(q.note) html+=`<div class="solution-note">${q.note}</div>`;
+    if(q.table) html+=buildTableHTML(q.table, q.table2? "Bảng 1":null);
+    if(q.table2) html+=buildTableHTML(q.table2, "Bảng 2 — mẫu mới (lọc từ kết quả lần 1)");
+    html+=`<div class="solution-expl-list">`;
+    q.statements.forEach((st,si)=>{
+      const tag=st.correct?'<b class="tag-ok">ĐÚNG</b>':'<b class="tag-no">SAI</b>';
+      html+=`<div class="sol-line"><span class="st-label">${LABELS[si]})</span>${tag} — ${st.expl||""}</div>`;
+    });
+    html+=`</div></div>`;
+
+    div.innerHTML=html;
+    box.appendChild(div);
+  });
+
+  box.querySelectorAll(".solution-toggle").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const target=document.getElementById(btn.dataset.target);
+      const willShow=target.classList.contains("hidden");
+      target.classList.toggle("hidden");
+      btn.textContent = willShow ? "📖 Ẩn lời giải chi tiết" : "📖 Xem lời giải chi tiết bằng bảng hai chiều";
+    });
+  });
+}
+</script>
+</body>
+</html>
