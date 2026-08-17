@@ -277,8 +277,11 @@
 
   function displayResults(res) {
     resultSection.hidden = false;
+    // compute score on scale 10; show rounded to 2 decimals
+    const score10 = (res.maxTotal > 0) ? (res.total / res.maxTotal * 10) : 0;
     scoreSummary.innerHTML = `<strong>Tên:</strong> ${studentNameEl.value || '[Chưa nhập]'}<br>
-      <strong>Điểm:</strong> ${Number(res.total).toFixed(2)} / ${res.maxTotal}<br>
+      <strong>Điểm (thô):</strong> ${Number(res.total).toFixed(2)} / ${res.maxTotal} &nbsp;&nbsp;
+      <strong>Điểm (thang 10):</strong> ${Number(score10).toFixed(2)}<br>
       <small class="small">Điểm nhóm 1: mỗi câu 1 điểm. Nhóm 2: quy định (1 đúng = 0.1; 2 đúng = 0.25; 3 đúng = 0.5; 4 đúng = 1.0). Nhóm 3: 1 điểm/câu.</small>`;
 
     // Detailed answers
@@ -334,7 +337,9 @@
     txt += `Đề: ${exam.title}\n`;
     txt += `Thời gian quy định: ${exam.timeMinutes} phút\n\n`;
     const res = gradeExam();
-    txt += `Điểm: ${Number(res.total).toFixed(2)} / ${res.maxTotal}\n\n`;
+    const score10 = (res.maxTotal > 0) ? (res.total / res.maxTotal * 10) : 0;
+    txt += `Điểm (thô): ${Number(res.total).toFixed(2)} / ${res.maxTotal}\n`;
+    txt += `Điểm (thang 10): ${Number(score10).toFixed(2)}\n\n`;
     txt += `--- Chi tiết ---\n`;
     res.details.group1.forEach((d, i) => {
       txt += `G1-${i+1}: ${d.q}\n  Học sinh: ${d.chosen || '(không chọn)'}  |  Đáp án: ${d.correct}  |  ${d.ok ? 'Đúng' : 'Sai'}\n`;
